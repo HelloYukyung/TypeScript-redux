@@ -1,46 +1,99 @@
-# Getting Started with Create React App
+# TypeScript-redux
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+TypeScript with react redux
 
-## Available Scripts
+## Installed
 
-In the project directory, you can run:
+```
+    "@types/react-redux": "^7.1.23",
+    "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
+    "react-redux": "^7.2.6",
+    "react-thunk": "^1.0.0",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.1",
+```
 
-### `npm start`
+## Learned
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### ActionType
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```ts
+export enum ActionType {
+  DEPOSIT = "deposit",
+  WITHDRAW = "withdraw",
+  BANKRUPT = "bankrupt",
+}
+```
 
-### `npm test`
+ActionType을 설정해 둠으로서 오타 에러 방지
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### actionCreator의 type설정
 
-### `npm run build`
+```ts
+// ../action/index.ts
+import { ActionType } from "../action-types";
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+interface DepositAction {
+  type: ActionType.DEPOSIT;
+  payload: number;
+}
+interface withdrawAction {
+  type: ActionType.WITHDRAW;
+  payload: number;
+}
+interface bankruptAction {
+  type: ActionType.BANKRUPT;
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export type Action = DepositAction | withdrawAction | bankruptAction;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```ts
+// ../action-creators/index.ts
+export const depositMoney = (amount: number) => {
+  return (dispatch: Dispatch<Action>) => {
+    dispatch({
+      type: ActionType.DEPOSIT,
+      payload: amount,
+    });
+  };
+};
+```
 
-### `npm run eject`
+위와 같이 설정
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```ts
+type Action = {
+  type: string;
+  payload?: number;
+};
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+좋지 않은 type설정의 예 => bankrupt는 payload 값이 없기 때문
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### reducer의 type설정
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```ts
+// ../reducers/index.ts
+import { combineReducers } from "redux";
+import bankReducer from "./bankReducer";
 
-## Learn More
+const reducers = combineReducers({
+  bank: bankReducer,
+});
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+export default reducers;
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+export type State = ReturnType<typeof reducers>;
+```
+
+```ts
+// app.tsx
+const state = useSelector((state: State) => state.bank);
+
+console.log(state);
+```
+
+app.tsx에서 `state.bank`를 가져올 때, `state`의 type은 `ReturnType<typeof reducers>`  
+(ReturnType: 특정 함수의 반환 타입을 추출해내는 제네릭 타입)
