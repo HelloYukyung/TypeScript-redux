@@ -16,6 +16,9 @@ TypeScript with react redux
 
 ## Learned
 
+![image](https://user-images.githubusercontent.com/49505843/156712866-f588ef7f-cf2d-49d3-86ea-d29a478025dc.png)
+
+
 ### ActionType
 
 ```ts
