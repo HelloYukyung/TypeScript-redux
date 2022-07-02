@@ -1,4 +1,4 @@
-# TypeScript-redux
+# Redux
 
 TypeScript with react redux
 
